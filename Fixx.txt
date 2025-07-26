@@ -1,0 +1,39 @@
+[force_move]
+enable_force_move: True
+
+# Bloco 1: Define o comportamento do G28 para o endstop quebrado
+[homing_override]
+axes: X Y Z
+set_position_x: 0
+set_position_y: 0
+set_position_z: 0
+gcode:
+    ; Informa o usuário para posicionar o X manualmente
+    M117 Posicione X em 0!
+    G4 P2000 ; Pausa por 2 segundos para ler a mensagem
+
+    ; Inicia o homing dos eixos que funcionam
+    M117 Homologando Y e Z...
+
+    ; Levanta o Z para uma altura segura antes de mover o Y
+    G90
+    G1 Z10 F3000
+
+    ; Home do eixo Y
+    G28 Y
+
+    ; Home do eixo Z
+    G28 Z
+
+    ; INFORMA AO KLIPPER QUE O EIXO X ESTÁ NA POSIÇÃO 0
+    SET_KINEMATIC_POSITION X=0
+
+    M117 ATENCAO: X=0 definido!
+    G4 P1000
+
+    ; Move o bico para uma posição segura após o homing parcial
+    G1 Z10 F3000
+    G1 X5 Y5 F4000 ; Move para perto da origem para ver se X respondeu
+
+    M117 Homing Parcial OK!
+
